@@ -80,6 +80,10 @@ while (false !== ($entry = $d->read())) {
 			case 'youtube.com':
 				$host['youtu.be'] = $host['youtube.com'];
 				break;
+				
+		          case 'mega.co.nz':
+				$host['mega.nz'] = $host['mega.co.nz'];
+				break;
 		}
 	}
 }
