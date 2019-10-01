@@ -84,6 +84,9 @@ while (false !== ($entry = $d->read())) {
 		          case 'mega.co.nz':
 				$host['mega.nz'] = $host['mega.co.nz'];
 				break;
+			case 'xvideos.com':
+				$host['xnxx.com'] = $host['xvideos.com'];
+				break;
 		}
 	}
 }
