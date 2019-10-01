@@ -98,6 +98,7 @@ function resetProgress() {
 				echo "<div id='progress$i' style='display:block;'>$nn";
 				$isHost = false;
 				$redir = $lastError = '';
+				$GLOBALS['throwRLErrors'] = true;
 				foreach ($host as $site => $file) {
 					if (host_matches($site, $Url['host'])) { //if (preg_match("/^(.+\.)?".$site."$/i", $Url['host'])) {
 						$isHost = true;
@@ -112,7 +113,7 @@ function resetProgress() {
 								$hostClass->Download($LINK);
 							}
 						} catch (Exception $e) {
-							echo "</div><script type='text/javascript'>updateStatus($i, '".htmlentities($e->getMessage())."');$nn"."document.getElementById('progress$i').style.display='none';</script>$nn";
+							echo "</div><script type='text/javascript'>updateStatus($i, '".htmlspecialchars($e->getMessage(), ENT_QUOTES)."');$nn"."document.getElementById('progress$i').style.display='none';</script>$nn";
 							continue 2;
 						}
 					}
@@ -223,6 +224,7 @@ function resetProgress() {
 
 		if (isset($_POST['cookieuse']) && !empty($_POST['cookie'])) $start_link .= '&cookie=' . urlencode(trim($_POST['cookie']));
 		if (isset($_POST['ytube_mp4']) && isset($_POST['yt_fmt'])) $start_link .= '&ytube_mp4=' . urlencode($_POST['ytube_mp4']) . '&yt_fmt='.urlencode($_POST['yt_fmt']);
+		if (isset($_POST['cleanname'])) $start_link .= '&cleanname=' . urlencode($_POST['cleanname']);
 
 ?>
 <script type="text/javascript">
@@ -337,9 +339,9 @@ function resetProgress() {
 										<td>&nbsp;</td>
 										<td id="proxy"<?php echo !empty($_COOKIE['useproxy']) ? '' : ' style="display: none;"'; ?>>
 											<table border="0">
-												<tr><td><?php echo lang(36); ?>:</td><td><input name="proxy" size="25"<?php echo !empty($_COOKIE['roxy']) ? ' value="'.htmlentities($_COOKIE['proxy']).'"' : ''; ?> /></td></tr>
-												<tr><td><?php echo lang(37); ?>:</td><td><input name="proxyuser" size="25"<?php echo !empty($_COOKIE['proxyuser']) ? ' value="'.htmlentities($_COOKIE['proxyuser']).'"' : ''; ?> /></td></tr>
-												<tr><td><?php echo lang(38); ?>:</td><td><input name="proxypass" size="25"<?php echo !empty($_COOKIE['proxypass']) ? ' value="'.htmlentities($_COOKIE['proxypass']).'"' : ''; ?> /></td></tr>
+												<tr><td><?php echo lang(36); ?>:</td><td><input name="proxy" size="25"<?php echo !empty($_COOKIE['roxy']) ? ' value="'.htmlspecialchars($_COOKIE['proxy'], ENT_QUOTES).'"' : ''; ?> /></td></tr>
+												<tr><td><?php echo lang(37); ?>:</td><td><input name="proxyuser" size="25"<?php echo !empty($_COOKIE['proxyuser']) ? ' value="'.htmlspecialchars($_COOKIE['proxyuser'], ENT_QUOTES).'"' : ''; ?> /></td></tr>
+												<tr><td><?php echo lang(38); ?>:</td><td><input name="proxypass" size="25"<?php echo !empty($_COOKIE['proxypass']) ? ' value="'.htmlspecialchars($_COOKIE['proxypass'], ENT_QUOTES).'"' : ''; ?> /></td></tr>
 											</table>
 										</td>
 									</tr>
@@ -374,18 +376,37 @@ function resetProgress() {
 											<label><input type="checkbox" name="ytube_mp4" onclick="javascript:var displ=this.checked?'':'none';document.getElementById('ytubeopt').style.display=displ;" checked="checked" />&nbsp;<?php echo lang(206); ?></label>
 											<table width="150" border="0" id="ytubeopt" style="display: none;">
 												<tr>
-													<td>&nbsp;<label><input type="checkbox" name="cleanname" checked="checked" /><small>&nbsp;Remove non-supported characters from filename</small></label></td>
+													<td>&nbsp;<label><input type="checkbox" name="cleanname" checked="checked" value="1" /><small>&nbsp;Remove non-supported characters from filename</small></label></td>
 												</tr>
 												<tr>
 													<td>
 														<select name="yt_fmt" id="yt_fmt">
 															<option value="highest" selected="selected"><?php echo lang(219); ?></option>
-															<option value='22'>[22] Video: MP4 720p | Audio: AAC ~192 kbps</option>
-															<option value='43'>[43] Video: WebM 360p | Audio: Vorbis ~128 kbps</option>
-															<option value='18'>[18] Video: MP4 360p | Audio: AAC ~96 kbps</option>
-															<option value='5'>[5] Video: FLV 240p | Audio: MP3 ~64 kbps</option>
-															<option value='36'>[36] Video: 3GP 240p | Audio: AAC ~36 kbps</option>
-															<option value='17'>[17] Video: 3GP 144p | Audio: AAC ~24 kbps</option>
+															<option value='22'>[22] Video: MP4 720p | Audio: AAC ~192 Kbps</option>
+															<option value='43'>[43] Video: WebM 360p | Audio: Vorbis ~128 Kbps</option>
+															<option value='18'>[18] Video: MP4 360p | Audio: AAC ~96 Kbps</option>
+															<option value='5'>[5] Video: FLV 240p | Audio: MP3 ~64 Kbps</option>
+															<option value='36'>[36] Video: 3GP 240p | Audio: AAC ~36 Kbps</option>
+															<option value='17'>[17] Video: 3GP 144p | Audio: AAC ~24 Kbps</option>
+															<option value='138'>[138] Video only: MP4 @ 4320p</option>
+															<option value='272'>[272] Video only: WebM @ 4320p</option>
+															<option value='315'>[315] Video only: WebM @ 2160p60</option>
+															<option value='266'>[266] Video only: MP4 @ 2160p</option>
+															<option value='313'>[313] Video only: WebM @ 2160p</option>
+															<option value='308'>[308] Video only: WebM @ 1440p60</option>
+															<option value='264'>[264] Video only: MP4 @ 1440p</option>
+															<option value='271'>[271] Video only: WebM @ 1440p</option>
+															<option value='299'>[299] Video only: MP4 @ 1080p60</option>
+															<option value='303'>[303] Video only: WebM @ 1080p60</option>
+															<option value='137'>[137] Video only: MP4 @ 1080p</option>
+															<option value='248'>[248] Video only: WebM @ 1080p</option>
+															<option value='298'>[298] Video only: MP4 @ 720p60</option>
+															<option value='302'>[302] Video only: WebM @ 720p60</option>
+															<option value='140'>[140] Audio only: AAC @ ~128 Kbps</option>
+															<option value='171'>[171] Audio only: Vorbis @ ~160 Kbps</option>
+															<option value='251'>[251] Audio only: Opus @ ~128 Kbps</option>
+															<option value='250'>[250] Audio only: Opus @ ~64 Kbps</option>
+															<option value='249'>[249] Audio only: Opus @ ~48 Kbps</option>
 														</select>
 													</td>
 												</tr>
